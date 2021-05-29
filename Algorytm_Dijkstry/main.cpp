@@ -70,7 +70,7 @@ vector<Wierzcholek> dijkstra(const Graf& G, int start)
 
     for(int i = 0; i < N; ++i)
     {
-        D[i] = INT_MAX;
+        D[i] = INT_MAX / 2;
         P[i] = -1;
         O[i] = 0;
     }
