@@ -5,100 +5,135 @@
 #include<limits>
 #include<algorithm>
 #include<queue>
+#include <array>
 using namespace std;
 
-struct K
+struct Wierzcholek
 {
-    int a, b, waga;
-
-
-    bool operator>(const K& k) const {return a > k.a;}
-    bool operator<(const K& k) const {return a < k.a;}
+    int index;
+    int waga;
+    int pop = -1;
+    int d = INT_MAX;
 };
+
+bool operator>(const Wierzcholek& a, const Wierzcholek& b)
+{
+    return a.waga > b.waga;
+}
+bool operator<(const Wierzcholek& a, const Wierzcholek& b)
+{
+    return a.waga < b.waga;
+}
 
 struct Graf
 {
-    vector<K> E; // teblica jest posortowana wzgl�dem 1 wierzcho�ka
-    vector<int> V;
-    bool wczytaj_z_pliku(const char* nazwa)
+    vector<vector<Wierzcholek>> adj;
+    int N = 0; // ilosc wierzcholkow 0, ..., n - 1
+};
+
+Graf wczytaj_z_pliku(const char* nazwa)
+{
+    ifstream os(nazwa);
+    Graf G;
+    int liczba_E, liczba_V, v;
+    Wierzcholek w;
+
+    if(!os.good())
     {
-        ifstream os(nazwa);
-        if(!os.good())
-        {
-            os.close();
-            return false;
-        }
-        int liczba_E, liczba_V;
-        K k;
-        os >> liczba_V >> liczba_E;
-        V.resize(liczba_V);
-        E.reserve(liczba_E);
-        while(!os.eof())
-        {
-            os >> k.a >> k.b >> k.waga;
-            E.push_back(k);
-
-        }
-        sort(E.begin(),E.end());
         os.close();
-        return true;
+        throw "XXX";
     }
-};
 
-struct V_dijkstra
+    os >> liczba_V >> liczba_E;
+
+    G.N = liczba_V;
+    G.adj.resize(liczba_V);
+
+    while(!os.eof())
+    {
+        os >> v >> w.index >> w.waga;
+        G.adj[v].push_back(w);
+    }
+    //sort(G.E.begin(),G.E.end());
+    os.close();
+    return G;
+}
+
+vector<Wierzcholek> dijkstra(const Graf& G, int start)
 {
-    int d = INT_MAX;
-    int pop = -1;
-    int index;
+    const int N = G.N;
+    std::vector<Wierzcholek> V(N);
+    int *D, *P, *O;
+    D = new int[N];
+    P = new int[N];
+    O = new int[N];
 
-    bool operator>(const V_dijkstra& v) const {return d > v.d;}
-    bool operator<(const V_dijkstra& v) const {return d < v.d;}
-};
-
-vector<V_dijkstra> dijkstra(const Graf& G, int start)
-{
-    const int N = G.V.size();
-    std::vector<V_dijkstra> V(N);
     for(int i = 0; i < N; ++i)
     {
-        V[i].index = i;
+        D[i] = INT_MAX;
+        P[i] = -1;
+        O[i] = 0;
     }
-    V[start].d = 0;
-    std::priority_queue<V_dijkstra*, std::vector<V_dijkstra*>,std::greater<V_dijkstra*>> Q;
-    Q.push(&V[start]);
-    while(!Q.empty())
+    D[start] = 0;
+
+    for(int i = 0; i < N; ++i)
     {
-        auto* v = Q.top();
-        for(const auto& e: G.E)
+        int min = -1;
+        while(O[++min]);
+        for(int j = min + 1; j < N; ++j)
+            if(!O[j] && D[j] < D[min])
+                min = j;
+
+        O[min] = 1;
+
+        for(auto& b: G.adj[min])
         {
-            if(e.a == v->index)
+            int u = b.index;
+            if(!O[u] && D[u] > D[min] + b.waga)
             {
-                V_dijkstra& a{V[e.a]};
-                V_dijkstra& b{V[e.b]};
-                if(b.d > a.d + e.waga)
-                {
-                    b.d = a.d + e.waga;
-                    b.pop = a.index;
-                    Q.push(&b);
-                }
+                D[u] = D[min] + b.waga;
+                P[u] = min;
             }
         }
-        Q.pop();
     }
+
+    for(int i = 0; i < N; ++i)
+    {
+        V[i] = {i,0,P[i],D[i]};
+    }
+
+    delete [] P;
+    delete [] D;
+    delete [] O;
     return V;
 }
 
 int main()
 {
     Graf G;
-    G.wczytaj_z_pliku("dijkstra_dane.txt");
-    for(auto e : G.E)
-        cout << "(" << e.a << "," << e.b << "): " << e.waga << endl;
+    try
+    {
+        G = wczytaj_z_pliku("dijkstra_dane.txt");
+    }
+    catch (...) {
+        cout << "Nie udalo sie wczytac pliku!" << endl;
+        return 0;
+    }
+
+    for(int i=0; i < G.N; ++i)
+    {
+        cout << i << ": ";
+        for(auto v: G.adj[i])
+        {
+            cout << v.index << "(" << v.waga << ") ";
+        }
+        cout << endl;
+    }
     int start = 0;
     int koniec = 4;
-    vector<V_dijkstra> wynik = dijkstra(G,start);
+    auto wynik = dijkstra(G,start);
     cout << "droga dla {" << start << "}->{" << koniec << "}: ";
-    V_dijkstra a = wynik[koniec];
+    auto a = wynik[koniec];
     while(a.pop >= 0)
     {
         cout << a.index<< " <- ";
