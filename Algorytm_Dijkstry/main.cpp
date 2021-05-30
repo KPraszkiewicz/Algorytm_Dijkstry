@@ -5,7 +5,7 @@
 #include<limits>
 #include<algorithm>
 #include<queue>
-#include <array>
+#include <stack>
 using namespace std;
 
 struct Wierzcholek
@@ -108,6 +108,29 @@ vector<Wierzcholek> dijkstra(const Graf& G, int start)
     return V;
 }
 
+void wypisz(const vector<Wierzcholek>& V, size_t start, size_t koniec)
+{
+    std::stack<int> S;
+    cout << "droga dla {" << start << "}->{" << koniec << "}: ";
+    if(start >= V.size() || koniec >= V.size())
+        return;
+
+    auto a = V[koniec];
+    while(a.pop >= 0)
+    {
+        S.push(a.index);
+        a = V[a.pop];
+    }
+    cout << a.index;
+
+    while(!S.empty())
+    {
+        cout << " -> " << S.top();
+        S.pop();
+    }
+    cout << endl;
+}
+
 int main()
 {
     Graf G;
@@ -129,16 +152,13 @@ int main()
         }
         cout << endl;
     }
+
     int start = 0;
     int koniec = 4;
+
     auto wynik = dijkstra(G,start);
-    cout << "droga dla {" << start << "}->{" << koniec << "}: ";
-    auto a = wynik[koniec];
-    while(a.pop >= 0)
-    {
-        cout << a.index<< " <- ";
-        a = wynik[a.pop];
-    }
-    cout << a.index << endl;
+
+    wypisz(wynik, start, koniec);
+
 
 }
