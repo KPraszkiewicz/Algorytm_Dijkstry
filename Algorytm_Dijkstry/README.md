@@ -1,1 +1,1 @@
-#Algorytm Dijkstry
+# Algorytm Dijkstry
