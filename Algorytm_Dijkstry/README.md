@@ -9,3 +9,14 @@ od do waga
 od do waga
 od do waga
 ```
+
+### jakie problemy rozwiązuje?
+- Algorytm znajduje najkrótszą ścieżkę w grafie skierowanym o dodatnich wagach.
+- Może sprawdzić, czy graf jest spójny.
+
+### przykłady wykorzystania
+- Jest często używany w sieciach komputerowych, np. przy trasowaniu (przykładowo w protokole OSPF).
+- Może być wykorzystany w nawigacji.
+- Wyszukiwanie ścieżki w grach.
+
+### z jakich metod korzysta się obecnie do rozwiązywania tych problemów?
