@@ -17,18 +17,12 @@ struct Wierzcholek
     int d = INT_MAX;
 };
 
-bool operator>(const Wierzcholek& a, const Wierzcholek& b)
-{
-    return a.waga > b.waga;
-}
-bool operator<(const Wierzcholek& a, const Wierzcholek& b)
-{
-    return a.waga < b.waga;
-}
+bool operator>(const Wierzcholek& a, const Wierzcholek& b) { return a.waga > b.waga; }
+bool operator<(const Wierzcholek& a, const Wierzcholek& b) { return a.waga < b.waga; }
 
 struct Graf
 {
-    vector<vector<Wierzcholek>> adj;
+    vector<vector<Wierzcholek>> adj; // lista sąsiedztwa
     int N = 0; // ilosc wierzcholkow 0, ..., n - 1
 };
 
@@ -50,12 +44,11 @@ Graf wczytaj_z_pliku(const char* nazwa)
     G.N = liczba_V;
     G.adj.resize(liczba_V);
 
-    while(!os.eof())
+    while(!os.eof() && liczba_E--)
     {
         os >> v >> w.index >> w.waga;
         G.adj[v].push_back(w);
     }
-    //sort(G.E.begin(),G.E.end());
     os.close();
     return G;
 }
@@ -65,6 +58,14 @@ vector<Wierzcholek> dijkstra(const Graf& G, int start)
     const int N = G.N;
     std::vector<Wierzcholek> V(N);
     int *D, *P, *O;
+
+    if(start >= N)
+    {
+        cout << "Wierzcholek {" << start << "} nie nalezy do grafu!" << endl;
+        return V;
+    }
+
+    // inicjalizacja
     D = new int[N];
     P = new int[N];
     O = new int[N];
@@ -80,6 +81,7 @@ vector<Wierzcholek> dijkstra(const Graf& G, int start)
     for(int i = 0; i < N; ++i)
     {
         int min = -1;
+
         while(O[++min]);
         for(int j = min + 1; j < N; ++j)
             if(!O[j] && D[j] < D[min])
@@ -135,6 +137,7 @@ void wypisz(const vector<Wierzcholek>& V, size_t start, size_t koniec)
 int main()
 {
     Graf G;
+    int start;
     try
     {
         G = wczytaj_z_pliku("dijkstra_dane.txt");
@@ -154,12 +157,19 @@ int main()
         cout << endl;
     }
 
-    int start = 0;
-    int koniec = 4;
 
-    auto wynik = dijkstra(G,start);
+    do
+    {
+        do
+        {
+            cout << "Podaj wierzcholek startowy [0-" << G.N - 1 << "]: ";
+            cin >> start;
+        }while(start < 0 || start >= G.N);
 
-    wypisz(wynik, start, koniec);
+        for(int i = 0; i < G.N; ++i)
+             wypisz( dijkstra(G,start), start, i);
 
+    }while(true);
 
+    //auto wynik = dijkstra(G,start);
 }
