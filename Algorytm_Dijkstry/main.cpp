@@ -164,6 +164,8 @@ int main()
         {
             cout << "Podaj wierzcholek startowy [0-" << G.N - 1 << "]: ";
             cin >> start;
+            cin.clear();
+            cin.ignore();
         }while(start < 0 || start >= G.N);
 
         for(int i = 0; i < G.N; ++i)
