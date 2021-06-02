@@ -1,5 +1,5 @@
 # Algorytm Dijkstry
-Aby uruchomić program, należy skompilować plik main.cpp.
+Aby uruchomić program, należy skompilować plik main.cpp, a następnie włączyć plik wykonywalny.
 Plik dijkstra_dane.txt musi się znajdować w tym samym katalogu co plik wykonywalny programu.
 
 ### Struktura pliku dijkstra_dane.txt
@@ -20,3 +20,5 @@ od do waga
 - Wyszukiwanie ścieżki w grach.
 
 ### z jakich metod korzysta się obecnie do rozwiązywania tych problemów?
+- Zwykle korzysta się z usprawnionego algorytmu dijkstry, który wykorzystuje kopiec fibonacciego.
+- W grach zwykle stosuje się szybsze i prostrze algorytmy wyszukiwania ścieżki, które są mniej dokładne, ale pozwalają zaoszczędzić trochę zasobów.
